@@ -1,0 +1,49 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id          String       @id @default(uuid())
+  name        String
+  nip         String       @unique
+  role        String       @default("STAFF") // "HEAD", "KATIM", "STAFF"
+  assignments Assignment[]
+  createdAt   DateTime     @default(now())
+  updatedAt   DateTime     @updatedAt
+}
+
+model Activity {
+  id          String       @id @default(uuid())
+  title       String
+  year        Int          @default(2026)
+  team        String
+  startDate   DateTime
+  dueDate     DateTime
+  status      String       @default("PLANNED")
+  assignments Assignment[]
+  createdAt   DateTime     @default(now())
+  updatedAt   DateTime     @updatedAt
+}
+
+model Assignment {
+  id             String   @id @default(uuid())
+  activityId     String
+  userId         String
+  roleInActivity String
+  targetQty      Int      @default(0)
+  realizedQty    Int      @default(0)
+  weight         Float    @default(1.0)
+  qualityScore   String?
+  metaData       Json?
+
+  activity       Activity @relation(fields: [activityId], references: [id], onDelete: Cascade)
+  user           User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  createdAt      DateTime @default(now())
+  updatedAt      DateTime @updatedAt
+}
