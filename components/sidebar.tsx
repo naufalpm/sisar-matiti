@@ -15,8 +15,8 @@ import {
 
 const NAV_ITEMS = [
   { label: "Dashboard Utama", icon: LayoutDashboard, href: "/" },
-  { label: "Kegiatan dan Survei", icon: ClipboardList, href: "/kegiatan", badge: "12" },
-  { label: "Daftar Pegawai", icon: Users, href: "/pegawai" },
+  { label: "Kegiatan dan Survei", icon: ClipboardList, href: "/kegiatan", badge: "8" },
+  { label: "Daftar Pegawai", icon: Users, href: "/pegawai", badge: "10" },
   { label: "Alokasi Beban Kerja", icon: BriefcaseBusiness, href: "/beban-kerja" },
   { label: "Evaluasi Kinerja", icon: Target, href: "/evaluasi" },
   { label: "Pengaturan", icon: Settings, href: "/pengaturan" },
@@ -53,7 +53,7 @@ export function Sidebar({
         />
       )}
       <aside
-        className={`fixed inset-y-0 left-0 z-40 flex w-[276px] flex-col bg-[#003b70] px-5 py-6 text-white transition-transform lg:static lg:translate-x-0 ${
+        className={`fixed inset-y-0 left-0 z-40 flex w-[276px] flex-col bg-[#003b70] px-5 py-6 text-white transition-transform overflow-y-auto lg:sticky lg:top-0 lg:h-screen lg:shrink-0 lg:translate-x-0 ${
           mobileOpen ? "translate-x-0" : "-translate-x-full"
         }`}
       >
@@ -89,10 +89,10 @@ export function Sidebar({
                 key={href}
                 href={href}
                 onClick={onClose}
-                className={`flex items-center gap-3 rounded-xl px-3 py-3 text-[13px] transition ${
+                className={`flex items-center gap-3 rounded-xl px-3 py-2.5 text-[13px] font-medium transition cursor-pointer focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white/40 ${
                   active
-                    ? "bg-white text-[#003b70] shadow-lg shadow-[#00274d]/20"
-                    : "text-blue-50/75 hover:bg-white/10 hover:text-white"
+                    ? "bg-white text-[#003b70] shadow-md shadow-[#00274d]/30 font-semibold"
+                    : "text-blue-100/80 hover:bg-white/10 hover:text-white"
                 }`}
               >
                 <Icon
@@ -101,7 +101,13 @@ export function Sidebar({
                 />
                 <span className="leading-5">{label}</span>
                 {badge && (
-                  <span className="ml-auto rounded-full bg-[#e7a72d] px-2 py-0.5 text-[10px] font-bold text-[#19344d]">
+                  <span
+                    className={`ml-auto rounded-full px-2 py-0.5 text-[10px] font-bold ${
+                      active
+                        ? "bg-[#003b70] text-white"
+                        : "bg-[#e7a72d] text-[#19344d]"
+                    }`}
+                  >
                     {badge}
                   </span>
                 )}
