@@ -1,0 +1,43 @@
+# Deploy Sisar Matiti di server BPS.
+#   cp .env.example .env.production   (isi nilai produksi)
+#   docker compose --env-file .env.production up -d --build db app
+#   docker compose --env-file .env.production run --rm migrate
+#   docker compose --env-file .env.production run --rm migrate npm run admin:buat -- admin "Nama Admin" "PasswordKuat123"
+services:
+  db:
+    image: postgres:17-alpine
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: ${POSTGRES_USER:-sisar}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:?isi POSTGRES_PASSWORD}
+      POSTGRES_DB: ${POSTGRES_DB:-sisar_matiti}
+      TZ: Asia/Jayapura
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER:-sisar} -d ${POSTGRES_DB:-sisar_matiti}"]
+      interval: 10s
+      retries: 5
+
+  migrate:
+    build: { context: ., target: migrator }
+    profiles: ["tools"]
+    environment:
+      DATABASE_URL: postgres://${POSTGRES_USER:-sisar}:${POSTGRES_PASSWORD}@db:5432/${POSTGRES_DB:-sisar_matiti}
+    depends_on:
+      db: { condition: service_healthy }
+
+  app:
+    build: { context: ., target: runner }
+    restart: unless-stopped
+    environment:
+      DATABASE_URL: postgres://${POSTGRES_USER:-sisar}:${POSTGRES_PASSWORD}@db:5432/${POSTGRES_DB:-sisar_matiti}
+      CRON_SECRET: ${CRON_SECRET:?isi CRON_SECRET}
+      COOKIE_INSECURE: ${COOKIE_INSECURE:-}
+    ports:
+      - "127.0.0.1:3000:3000" # diekspos lewat reverse proxy (nginx) dengan HTTPS
+    depends_on:
+      db: { condition: service_healthy }
+
+volumes:
+  pgdata:
