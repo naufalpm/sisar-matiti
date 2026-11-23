@@ -40,3 +40,6 @@ yarn-error.log*
 # typescript
 *.tsbuildinfo
 next-env.d.ts
+
+# data lokal: foto pegawai & file impor kepegawaian (berisi data pribadi)
+/data/

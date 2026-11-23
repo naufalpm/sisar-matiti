@@ -8,6 +8,13 @@
       "when": 1794884074711,
       "tag": "0000_init",
       "breakpoints": true
+    },
+    {
+      "idx": 1,
+      "version": "7",
+      "when": 1795391847692,
+      "tag": "0001_profil_pegawai",
+      "breakpoints": true
     }
   ]
 }

@@ -245,10 +245,12 @@ describe("notifikasi terjadwal", () => {
 });
 
 describe("admin", () => {
-  it("pegawai hanya boleh di satu tim besar per tahun", async () => {
+  it("pegawai boleh masuk lebih dari satu tim besar per tahun", async () => {
     await admin.setAnggotaTim(timId, [users.Ani.id]);
-    await expect(admin.setAnggotaTim(timLainId, [users.Ani.id])).rejects.toThrow(/tim besar lain/);
+    await admin.setAnggotaTim(timLainId, [users.Ani.id]);
     const [k] = await db.insert(schema.tim).values({ nama: "ZI", jenis: "kecil", tahun }).returning();
-    await admin.setAnggotaTim(k.id, [users.Ani.id]); // tim kecil boleh
+    await admin.setAnggotaTim(k.id, [users.Ani.id]);
+    const rows = await db.select().from(schema.anggotaTim).where(eq(schema.anggotaTim.pegawaiId, users.Ani.id));
+    expect(rows.map((r) => r.timId)).toEqual(expect.arrayContaining([timId, timLainId, k.id]));
   });
 });

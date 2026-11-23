@@ -70,7 +70,7 @@ Data disusun bertingkat: Tim → Kegiatan → Sub-kegiatan → Pekerjaan → Pen
 
 | Entitas | Atribut utama | Aturan |
 | --- | --- | --- |
-| Tim | Nama, jenis (besar/kecil), tahun, ketua | Setiap pegawai masuk tepat 1 tim besar per tahun, dan boleh ikut di beberapa tim kecil. Struktur tim bisa berubah tiap tahun. |
+| Tim | Nama, jenis (besar/kecil), tahun, ketua | Pegawai boleh masuk lebih dari satu tim besar maupun tim kecil per tahun (mis. Tim Umum + satu tim fungsi). Struktur tim bisa berubah tiap tahun. |
 | Kegiatan | Nama, tim pemilik, PJ Kegiatan, periode mulai–selesai, keterangan | Hanya dibuat oleh Ketua tim pemilik. Contoh: Sakernas, Sensus Ekonomi. |
 | Sub-kegiatan | Nama, kegiatan induk, periode | Contoh: Pelatihan Inda, Pelatihan Petugas, Pencacahan. |
 | Pekerjaan | Nama, sub-kegiatan, peran (panitia/peserta/PML/PCL/dll.), target kuantitatif + satuan, target kualitatif (keterangan), deadline, bobot | Bobot (skala 1–10) ditetapkan Kepala. Pekerjaan yang belum diberi bobot tetap bisa ditugaskan dan dikerjakan, tetapi bertanda **Belum berbobot** dan belum dihitung ke beban kerja. Pekerjaan bisa diberikan ke pegawai dari tim mana pun. |

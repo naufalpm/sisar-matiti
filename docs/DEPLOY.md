@@ -23,12 +23,28 @@ docker compose --env-file .env.production run --rm migrate \
 ```
 
 Login sebagai admin, lalu:
-1. **Admin → Pegawai**: buat akun ±28 pegawai (password awal; pegawai diminta menggantinya). Tandai akun Kepala.
+1. **Impor data pegawai** dari ekspor CSV "Pegawai menurut Unit Organisasi" (lihat bagian *Impor data pegawai* di bawah). Akun dibuat otomatis dan Kepala BPS Kabupaten langsung mendapat peran Kepala. Pegawai yang tidak ada di CSV dapat dibuat manual di **Admin → Pegawai**.
 2. **Admin → Tim**: buat tim besar & tim kecil tahun berjalan, tunjuk ketua, isi anggota.
 3. **Admin → Pengaturan**: periksa ambang capaian (default 90%).
 4. Ketua Tim mulai membuat kegiatan dari menu **Kelola Kegiatan**.
 
 > PRD: data awal mulai dari nol. **Jangan** menjalankan `npm run db:seed` di produksi (itu data contoh).
+
+### Impor data pegawai
+
+File CSV berisi data pribadi: salin ke server di luar repo dan **jangan** di-commit (folder `data/` sudah di-ignore).
+
+```bash
+# 1) Pratinjau — tidak mengubah database
+docker compose --env-file .env.production run --rm -v /path/pegawai.csv:/app/data/pegawai.csv:ro   migrate npm run impor:pegawai -- data/pegawai.csv
+# 2) Terapkan setelah hasil pratinjau sesuai
+docker compose --env-file .env.production run --rm -v /path/pegawai.csv:/app/data/pegawai.csv:ro   migrate npm run impor:pegawai -- data/pegawai.csv --jalankan
+```
+
+- Pencocokan lewat NIP 18 digit (bila belum ada: lewat username). Impor boleh diulang; profil akan diperbarui.
+- Akun baru: username dari kolom *Username*, password awal = **NIP 18 digit**, wajib diganti saat login pertama.
+- Akun yang sudah ada: hanya profil yang diperbarui; username, password, status aktif, dan peran Admin tidak diubah.
+- Foto pegawai diunggah admin dari halaman profil (**Daftar Pegawai → nama pegawai**), disimpan di volume Docker `uploads`. Sertakan volume ini dalam backup (`docker run --rm -v sisar-matiti_uploads:/d -v /var/backups/sisar:/b alpine tar czf /b/foto-$(date +%F).tgz -C /d .`).
 
 ## 3. Reverse proxy (nginx)
 
@@ -41,7 +57,7 @@ server {
 
   gzip on;
   gzip_types text/css application/javascript application/json image/svg+xml;
-  client_max_body_size 2m;
+  client_max_body_size 4m;   # upload foto pegawai (maks 2 MB)
 
   location / {
     proxy_pass http://127.0.0.1:3000;

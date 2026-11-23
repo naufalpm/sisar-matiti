@@ -1,5 +1,5 @@
 import "server-only";
-import { and, eq, inArray, ne } from "drizzle-orm";
+import { and, eq, ne } from "drizzle-orm";
 import { db, schema } from "@/db";
 import { hashPassword } from "@/lib/auth/password";
 import { hapusSemuaSesiPegawai } from "@/lib/auth/session";
@@ -29,11 +29,18 @@ export async function simpanPegawai(input: {
       : eq(schema.pegawai.username, username),
   });
   if (dup) throw new AksiError("Username sudah dipakai.");
+  const nip = input.nip?.trim() || null;
+  if (nip) {
+    const dupNip = await db.query.pegawai.findFirst({
+      where: input.id ? and(eq(schema.pegawai.nip, nip), ne(schema.pegawai.id, input.id)) : eq(schema.pegawai.nip, nip),
+    });
+    if (dupNip) throw new AksiError(`NIP sudah dipakai ${dupNip.nama}.`);
+  }
 
   const nilai = {
     username,
     nama,
-    nip: input.nip?.trim() || null,
+    nip,
     jabatan: input.jabatan?.trim() || null,
     isKepala: input.isKepala,
     isAdmin: input.isAdmin,
@@ -82,17 +89,6 @@ export async function simpanTim(input: {
   }
   const nilai = { nama, jenis: input.jenis, tahun: input.tahun, ketuaId: input.ketuaId };
   if (input.id) {
-    const lama = await db.query.tim.findFirst({ where: eq(schema.tim.id, input.id) });
-    if (!lama) throw new AksiError("Tim tidak ditemukan.");
-    if (lama.jenis !== input.jenis || lama.tahun !== input.tahun) {
-      const anggota = await db
-        .select({ pegawaiId: schema.anggotaTim.pegawaiId })
-        .from(schema.anggotaTim)
-        .where(eq(schema.anggotaTim.timId, input.id));
-      if (input.jenis === "besar") {
-        await cekSatuTimBesar(anggota.map((a) => a.pegawaiId), input.tahun, input.id);
-      }
-    }
     await db.update(schema.tim).set(nilai).where(eq(schema.tim.id, input.id));
     return input.id;
   }
@@ -104,34 +100,10 @@ export async function setAktifTim(timId: number, aktif: boolean) {
   await db.update(schema.tim).set({ aktif }).where(eq(schema.tim.id, timId));
 }
 
-/** Setiap pegawai masuk tepat 1 tim besar per tahun. */
-async function cekSatuTimBesar(pegawaiIds: number[], tahun: number, kecualiTimId: number) {
-  if (pegawaiIds.length === 0) return;
-  const bentrok = await db
-    .select({ nama: schema.pegawai.nama, tim: schema.tim.nama })
-    .from(schema.anggotaTim)
-    .innerJoin(schema.tim, eq(schema.tim.id, schema.anggotaTim.timId))
-    .innerJoin(schema.pegawai, eq(schema.pegawai.id, schema.anggotaTim.pegawaiId))
-    .where(
-      and(
-        inArray(schema.anggotaTim.pegawaiId, pegawaiIds),
-        eq(schema.tim.jenis, "besar"),
-        eq(schema.tim.tahun, tahun),
-        eq(schema.tim.aktif, true),
-        ne(schema.tim.id, kecualiTimId),
-      ),
-    );
-  if (bentrok.length) {
-    const daftar = bentrok.map((b) => `${b.nama} (${b.tim})`).join(", ");
-    throw new AksiError(`Pegawai sudah masuk tim besar lain di tahun ${tahun}: ${daftar}.`);
-  }
-}
-
 export async function setAnggotaTim(timId: number, pegawaiIds: number[]) {
   const t = await db.query.tim.findFirst({ where: eq(schema.tim.id, timId) });
   if (!t) throw new AksiError("Tim tidak ditemukan.");
   const ids = [...new Set(pegawaiIds)];
-  if (t.jenis === "besar") await cekSatuTimBesar(ids, t.tahun, t.id);
   await db.transaction(async (tx) => {
     await tx.delete(schema.anggotaTim).where(eq(schema.anggotaTim.timId, timId));
     if (ids.length) await tx.insert(schema.anggotaTim).values(ids.map((pegawaiId) => ({ timId, pegawaiId })));

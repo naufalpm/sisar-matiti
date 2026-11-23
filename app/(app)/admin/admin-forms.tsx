@@ -247,7 +247,7 @@ export function TimDialog({
       <DialogContent>
         <DialogHeader>
           <DialogTitle>{initial ? "Ubah tim" : "Tambah tim"}</DialogTitle>
-          <DialogDescription>Setiap pegawai masuk tepat 1 tim besar per tahun, dan boleh ikut beberapa tim kecil.</DialogDescription>
+          <DialogDescription>Pegawai boleh masuk lebih dari satu tim (besar maupun kecil) per tahun.</DialogDescription>
         </DialogHeader>
         <form
           className="grid gap-4"

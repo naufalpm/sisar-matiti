@@ -13,7 +13,9 @@
     "db:seed": "tsx scripts/seed.ts",
     "db:studio": "drizzle-kit studio",
     "job:harian": "tsx --conditions=react-server scripts/job-harian.ts",
-    "admin:buat": "tsx scripts/buat-admin.ts"
+    "admin:buat": "tsx scripts/buat-admin.ts",
+    "impor:pegawai": "tsx scripts/impor-pegawai.ts",
+    "impor:tim": "tsx scripts/impor-tim.ts"
   },
   "dependencies": {
     "@node-rs/argon2": "^2.2.2",

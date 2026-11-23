@@ -1,4 +1,5 @@
 import Link from "next/link";
+import Image from "next/image";
 import { cn } from "@/lib/utils";
 import type { LucideIcon } from "lucide-react";
 
@@ -189,14 +190,33 @@ export function EmptyState({
   );
 }
 
-export function Avatar({ nama, className }: { nama: string; className?: string }) {
-  const inisial = nama
+/** Nama tanpa gelar di belakang koma: "Maimun, SST, M.Stat" → "Maimun". */
+export function namaTanpaGelar(nama: string) {
+  return nama.split(",")[0].trim() || nama;
+}
+
+export function Avatar({ nama, foto, className }: { nama: string; foto?: string | null; className?: string }) {
+  const dasar = namaTanpaGelar(nama);
+  const inisial = dasar
     .split(/\s+/)
     .filter(Boolean)
     .slice(0, 2)
     .map((s) => s[0]?.toUpperCase())
     .join("");
-  const hue = [...nama].reduce((h, c) => (h * 31 + c.charCodeAt(0)) % 360, 7);
+  const hue = [...dasar].reduce((h, c) => (h * 31 + c.charCodeAt(0)) % 360, 7);
+  if (foto) {
+    return (
+      <Image
+        src={foto}
+        alt=""
+        aria-hidden
+        width={160}
+        height={160}
+        unoptimized
+        className={cn("size-8 shrink-0 rounded-full bg-muted object-cover", className)}
+      />
+    );
+  }
   return (
     <span
       aria-hidden

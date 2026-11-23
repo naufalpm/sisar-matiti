@@ -21,6 +21,8 @@ const nextConfig: NextConfig = {
   },
   experimental: {
     agentFeedback: true,
+    // Upload foto pegawai (maks 2 MB) lewat Server Action; default Next.js 1 MB.
+    serverActions: { bodySizeLimit: "3mb" },
   },
   serverExternalPackages: ["@node-rs/argon2"],
   turbopack: {

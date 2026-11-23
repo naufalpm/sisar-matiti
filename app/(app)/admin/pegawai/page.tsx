@@ -1,8 +1,10 @@
 import type { Metadata } from "next";
+import Link from "next/link";
 import { asc } from "drizzle-orm";
 import { Users } from "lucide-react";
 import { db, schema } from "@/db";
 import { requireAdmin } from "@/lib/auth/user";
+import { urlFoto } from "@/lib/foto";
 import { timBesarPegawai } from "@/lib/data";
 import { bulanIni } from "@/lib/waktu";
 import { Avatar, PageHeader, SectionCard } from "@/components/sisar/ui";
@@ -44,9 +46,9 @@ export default async function AdminPegawaiPage() {
                 <tr key={p.id} className={cn(!p.aktif && "bg-muted/40 text-muted-foreground")}>
                   <td className="px-4 py-2.5 sm:px-5">
                     <span className="flex items-center gap-2.5">
-                      <Avatar nama={p.nama} className={cn(!p.aktif && "opacity-50")} />
+                      <Avatar nama={p.nama} foto={urlFoto(p.foto)} className={cn(!p.aktif && "opacity-50")} />
                       <span className="min-w-0">
-                        <span className="block truncate font-medium">{p.nama}</span>
+                        <Link href={`/pegawai/${p.id}`} className="block truncate font-medium hover:text-primary hover:underline">{p.nama}</Link>
                         <span className="block truncate text-xs text-muted-foreground">{p.jabatan ?? "—"}</span>
                       </span>
                     </span>

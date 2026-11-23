@@ -126,3 +126,11 @@ export function parsePeriode(raw: string | string[] | undefined) {
 export function kodePeriode(tahun: number, bulan: number) {
   return `${tahun}-${String(bulan).padStart(2, "0")}`;
 }
+
+/** Usia dalam tahun penuh pada tanggal `per` (default hari ini, WIT). */
+export function hitungUsia(tglLahir: string | null | undefined, per: string = hariIni()): number | null {
+  if (!tglLahir) return null;
+  const [y, m, d] = tglLahir.split("-").map(Number);
+  const [py, pm, pd] = per.split("-").map(Number);
+  return py - y - (pm < m || (pm === m && pd < d) ? 1 : 0);
+}

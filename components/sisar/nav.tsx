@@ -6,6 +6,7 @@ import { usePathname } from "next/navigation";
 import { useState } from "react";
 import {
   Home,
+  Contact,
   LayoutDashboard,
   Scale,
   ClipboardList,
@@ -44,6 +45,7 @@ function buildNav(u: NavUser, c: NavCounts): Group[] {
   const utama: Item[] = [{ href: "/", label: "Beranda", icon: Home, match: (p) => p === "/" }];
   if (u.isKepala || u.isAdmin) utama.push({ href: "/dashboard", label: "Dashboard Kepala", icon: LayoutDashboard, match: (p) => p === "/dashboard" });
   if (u.isKepala) utama.push({ href: "/dashboard/bobot", label: "Penetapan Bobot", icon: Scale, badge: c.belumBerbobot });
+  utama.push({ href: "/pegawai", label: "Daftar Pegawai", icon: Contact });
 
   const kerja: Item[] = [
     ...(u.isKepala ? [] : [{ href: "/pekerjaan-saya", label: "Pekerjaan Saya", icon: ClipboardList }]),

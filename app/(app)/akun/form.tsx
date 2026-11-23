@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -16,6 +17,8 @@ export function GantiPasswordForm() {
       className="grid gap-4"
       onSubmit={(e) => {
         e.preventDefault();
+        if (f.baru.length < 8) return void toast.error("Password baru minimal 8 karakter.");
+        if (f.baru !== f.ulang) return void toast.error("Konfirmasi password tidak sama.");
         run(() => gantiPasswordAksi(f.lama, f.baru, f.ulang), { onOk: () => setF({ lama: "", baru: "", ulang: "" }) });
       }}
     >
@@ -25,7 +28,19 @@ export function GantiPasswordForm() {
       </div>
       <div className="grid gap-1.5">
         <Label htmlFor="pw-baru">Password baru</Label>
-        <Input id="pw-baru" type="password" autoComplete="new-password" minLength={8} value={f.baru} onChange={(e) => setF({ ...f, baru: e.target.value })} required />
+        <Input
+          id="pw-baru"
+          type="password"
+          autoComplete="new-password"
+          minLength={8}
+          value={f.baru}
+          onChange={(e) => setF({ ...f, baru: e.target.value })}
+          aria-describedby="pw-baru-hint"
+          required
+        />
+        <p id="pw-baru-hint" className={f.baru && f.baru.length < 8 ? "text-xs text-warning" : "text-xs text-muted-foreground"}>
+          Minimal 8 karakter{f.baru ? ` (sekarang ${f.baru.length})` : ""}.
+        </p>
       </div>
       <div className="grid gap-1.5">
         <Label htmlFor="pw-ulang">Ulangi password baru</Label>
@@ -45,7 +60,7 @@ export function GantiPasswordForm() {
           </p>
         ) : null}
       </div>
-      <Button type="submit" disabled={pending || !cocok || f.baru.length < 8} className="justify-self-start">
+      <Button type="submit" disabled={pending} className="justify-self-start">
         {pending ? <Spinner /> : null}
         Simpan password
       </Button>

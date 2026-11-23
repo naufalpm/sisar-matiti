@@ -19,12 +19,27 @@ const ts = (name: string) => timestamp(name, { withTimezone: true, mode: "date" 
 /* Pegawai & sesi                                                     */
 /* ------------------------------------------------------------------ */
 
+export const jenisKelaminEnum = pgEnum("jenis_kelamin", ["L", "P"]);
+
 export const pegawai = pgTable("pegawai", {
   id: serial("id").primaryKey(),
   username: text("username").notNull().unique(),
   nama: text("nama").notNull(),
-  nip: text("nip"),
+  /** NIP 18 digit (unik; kunci pencocokan impor data kepegawaian). */
+  nip: text("nip").unique(),
   jabatan: text("jabatan"),
+  /* ---- Profil kepegawaian (direktori pegawai) ---- */
+  /** NIP lama BPS (9 digit). */
+  nipLama: text("nip_lama"),
+  unitKerja: text("unit_kerja"),
+  golongan: text("golongan"),
+  tmtGolongan: date("tmt_golongan"),
+  pendidikan: text("pendidikan"),
+  tglLulus: date("tgl_lulus"),
+  jenisKelamin: jenisKelaminEnum("jenis_kelamin"),
+  tglLahir: date("tgl_lahir"),
+  /** Nama file foto di UPLOAD_DIR (lihat lib/foto.ts). */
+  foto: text("foto"),
   passwordHash: text("password_hash").notNull(),
   isKepala: boolean("is_kepala").notNull().default(false),
   isAdmin: boolean("is_admin").notNull().default(false),

@@ -354,14 +354,57 @@ export async function pegawaiAktif() {
     .orderBy(asc(pg.nama));
 }
 
-/** Tim besar setiap pegawai di tahun tertentu. */
+/**
+ * Label tim besar setiap pegawai di tahun tertentu, mis. "Produksi, Umum".
+ * Pegawai boleh di beberapa tim besar; tim yang anggotanya paling sedikit (paling spesifik,
+ * biasanya tim fungsi) ditulis lebih dulu.
+ */
 export async function timBesarPegawai(tahun: number) {
   const rows = await db
-    .select({ pegawaiId: schema.anggotaTim.pegawaiId, timNama: tim.nama })
+    .select({
+      pegawaiId: schema.anggotaTim.pegawaiId,
+      timNama: tim.nama,
+      jumlah: sql<number>`(select count(*)::int from anggota_tim a where a.tim_id = ${tim.id})`,
+    })
     .from(schema.anggotaTim)
     .innerJoin(tim, eq(tim.id, schema.anggotaTim.timId))
     .where(and(eq(tim.tahun, tahun), eq(tim.jenis, "besar"), eq(tim.aktif, true)));
-  return new Map(rows.map((r) => [r.pegawaiId, r.timNama]));
+  rows.sort((a, b) => a.jumlah - b.jumlah || a.timNama.localeCompare(b.timNama));
+  const per = new Map<number, string[]>();
+  for (const r of rows) per.set(r.pegawaiId, [...(per.get(r.pegawaiId) ?? []), r.timNama]);
+  return new Map([...per].map(([id, nama]) => [id, nama.join(", ")]));
+}
+
+/** Semua tim aktif (besar & kecil) tiap pegawai di tahun tertentu, beserta perannya. */
+export async function timKerjaPegawai(tahun: number) {
+  const rows = await db
+    .select({
+      pegawaiId: schema.anggotaTim.pegawaiId,
+      timId: tim.id,
+      nama: tim.nama,
+      jenis: tim.jenis,
+      ketuaId: tim.ketuaId,
+      jumlah: sql<number>`(select count(*)::int from anggota_tim a where a.tim_id = ${tim.id})`,
+    })
+    .from(schema.anggotaTim)
+    .innerJoin(tim, eq(tim.id, schema.anggotaTim.timId))
+    .where(and(eq(tim.tahun, tahun), eq(tim.aktif, true)));
+  // Ketua dulu, lalu tim besar, lalu tim paling spesifik (anggota paling sedikit).
+  rows.sort(
+    (a, b) =>
+      Number(b.ketuaId === b.pegawaiId) - Number(a.ketuaId === a.pegawaiId) ||
+      Number(b.jenis === "besar") - Number(a.jenis === "besar") ||
+      a.jumlah - b.jumlah ||
+      a.nama.localeCompare(b.nama),
+  );
+  const per = new Map<number, { id: number; nama: string; jenis: "besar" | "kecil"; ketua: boolean }[]>();
+  for (const r of rows) {
+    per.set(r.pegawaiId, [
+      ...(per.get(r.pegawaiId) ?? []),
+      { id: r.timId, nama: r.nama, jenis: r.jenis, ketua: r.ketuaId === r.pegawaiId },
+    ]);
+  }
+  return per;
 }
 
 export async function daftarPekerjaanBobot(opts: { tahun: number; hanyaBelum?: boolean }) {
