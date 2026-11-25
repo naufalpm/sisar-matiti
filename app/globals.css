@@ -171,6 +171,15 @@
       radial-gradient(90% 120% at 0% 100%, oklch(0.6 0.16 145 / 0.22) 0%, transparent 50%),
       linear-gradient(135deg, oklch(0.42 0.15 258), oklch(0.52 0.16 250));
   }
+  /* Panel branding login: gradien biru murni (tanpa campuran netral). */
+  .bg-login {
+    background: linear-gradient(150deg, #0B3C8C 0%, #0052A8 55%, #0062C4 100%);
+  }
+  /* Pola titik data tipis di atas panel biru. */
+  .bg-login-dots {
+    background-image: radial-gradient(rgb(255 255 255 / 0.09) 1.2px, transparent 1.2px);
+    background-size: 22px 22px;
+  }
   .tabular { font-variant-numeric: tabular-nums; }
 }
 
