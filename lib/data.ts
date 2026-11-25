@@ -30,6 +30,7 @@ function kolomBaris() {
     penugasanId: pn.id,
     pegawaiId: pn.pegawaiId,
     pegawaiNama: pg.nama,
+    pegawaiFoto: pg.foto,
     pekerjaanId: pk.id,
     pekerjaanNama: pk.nama,
     peran: pk.peran,
@@ -225,7 +226,7 @@ export async function detailKegiatan(user: CurrentUser, kegiatanId: number) {
     : [];
   const penugasanRows = pekerjaanRows.length
     ? await db
-        .select({ id: pn.id, pekerjaanId: pn.pekerjaanId, pegawaiId: pn.pegawaiId, nama: pg.nama })
+        .select({ id: pn.id, pekerjaanId: pn.pekerjaanId, pegawaiId: pn.pegawaiId, nama: pg.nama, foto: pg.foto })
         .from(pn)
         .innerJoin(pg, eq(pg.id, pn.pegawaiId))
         .where(and(inArray(pn.pekerjaanId, pekerjaanRows.map((p) => p.id)), eq(pn.aktif, true)))
@@ -348,7 +349,7 @@ export async function deadlineMendatang(hari = 7) {
 
 export async function pegawaiAktif() {
   return db
-    .select({ id: pg.id, nama: pg.nama, jabatan: pg.jabatan, username: pg.username })
+    .select({ id: pg.id, nama: pg.nama, jabatan: pg.jabatan, username: pg.username, foto: pg.foto })
     .from(pg)
     .where(eq(pg.aktif, true))
     .orderBy(asc(pg.nama));

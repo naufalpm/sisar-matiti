@@ -20,6 +20,7 @@ import { fmtTanggal, hariIni, labelBulan, parsePeriode, selisihHari } from "@/li
 import { Button } from "@/components/ui/button";
 import { MonthPicker } from "@/components/sisar/client";
 import { Avatar, EmptyState, PageHeader, SectionCard, StatCard } from "@/components/sisar/ui";
+import { urlFoto } from "@/lib/foto";
 import { ProgressBar, TerkunciBadge } from "@/components/sisar/status";
 
 export const metadata: Metadata = { title: "Dashboard Kepala" };
@@ -29,7 +30,6 @@ export default async function DashboardPage({ searchParams }: PageProps<"/dashbo
   if (!user.isKepala && !user.isAdmin) redirect("/terlarang");
   const sp = await searchParams;
   const { tahun, bulan } = parsePeriode(sp.bulan);
-  const kode = `${tahun}-${String(bulan).padStart(2, "0")}`;
 
   const [ringkas, rekap, ambang, kegiatan, deadline, pegawai, timBesar, belumBerbobot] = await Promise.all([
     ringkasanBulan(tahun, bulan),
@@ -43,6 +43,7 @@ export default async function DashboardPage({ searchParams }: PageProps<"/dashbo
   ]);
 
   const namaPegawai = new Map(pegawai.map((p) => [p.id, p.nama]));
+  const fotoPegawai = new Map(pegawai.map((p) => [p.id, urlFoto(p.foto)]));
   const rekapList = [...rekap.data.values()].filter((r) => namaPegawai.has(r.pegawaiId));
   const bawahAmbang = rekapList
     .filter((r) => r.capaian != null && r.capaian < ambang)
@@ -114,7 +115,7 @@ export default async function DashboardPage({ searchParams }: PageProps<"/dashbo
                     <tr key={r.pegawaiId}>
                       <td className="px-4 py-2.5 sm:px-5">
                         <span className="flex items-center gap-2">
-                          <Avatar nama={namaPegawai.get(r.pegawaiId)!} className="size-7 text-[10px]" />
+                          <Avatar nama={namaPegawai.get(r.pegawaiId)!} foto={fotoPegawai.get(r.pegawaiId)} className="size-7 text-[10px]" />
                           <span className="min-w-0">
                             <span className="block truncate font-medium">{namaPegawai.get(r.pegawaiId)}</span>
                             <span className="block truncate text-xs text-muted-foreground">Tim {timBesar.get(r.pegawaiId) ?? "—"}</span>
@@ -248,9 +249,6 @@ export default async function DashboardPage({ searchParams }: PageProps<"/dashbo
           )}
         </SectionCard>
       </div>
-      <p className="mt-6 text-xs text-muted-foreground">
-        Periode {kode}. Capaian = rata-rata progres penugasan yang sudah di-approve; bulan dikunci tanggal 5 bulan berikutnya.
-      </p>
     </>
   );
 }

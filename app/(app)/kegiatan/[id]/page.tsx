@@ -7,6 +7,7 @@ import { detailKegiatan } from "@/lib/data";
 import { fmtPersen, hitungProgres } from "@/lib/capaian";
 import { fmtTanggal, fmtWaktu, labelBulan } from "@/lib/waktu";
 import { Button } from "@/components/ui/button";
+import { urlFoto } from "@/lib/foto";
 import { Avatar, EmptyState, HeroHeader, SectionCard } from "@/components/sisar/ui";
 import { ApprovalBadge, BobotBadge, ProgressBar, StatusBadge, TerlambatBadge } from "@/components/sisar/status";
 
@@ -145,7 +146,7 @@ export default async function DetailKegiatanPage({ params }: PageProps<"/kegiata
                           {p.penugasan.map((a) => (
                             <li key={a.id} className="rounded-xl border bg-background/60 p-3">
                               <div className="flex flex-wrap items-center gap-2.5">
-                                <Avatar nama={a.nama} className="size-7 text-[10px]" />
+                                <Avatar nama={a.nama} foto={urlFoto(a.foto)} className="size-7 text-[10px]" />
                                 <span className="min-w-0 flex-1 truncate text-sm font-medium">
                                   {a.nama}
                                   {a.pegawaiId === user.id ? <span className="ml-1 text-xs text-primary">(Anda)</span> : null}

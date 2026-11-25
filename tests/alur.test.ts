@@ -27,6 +27,7 @@ function mkUser(id: number, nama: string, extra: Partial<U> = {}): U {
     nama,
     username: nama.toLowerCase(),
     jabatan: null,
+    foto: null,
     isKepala: false,
     isAdmin: false,
     harusGantiPassword: false,

@@ -8,6 +8,7 @@ import { hitungProgres } from "@/lib/capaian";
 import { fmtTanggal, fmtWaktu, labelBulan, parsePeriode } from "@/lib/waktu";
 import { MonthPicker } from "@/components/sisar/client";
 import { PageHeader, SectionCard } from "@/components/sisar/ui";
+import { urlFoto } from "@/lib/foto";
 import { cn } from "@/lib/utils";
 import { AntreanList, DisetujuiList, SelfApprovedList, type ApprovalRow } from "./approval-list";
 
@@ -17,6 +18,7 @@ function toRow(r: Baris, userId: number): ApprovalRow {
   return {
     id: r.id,
     pegawaiNama: r.pegawaiNama,
+    pegawaiFoto: urlFoto(r.pegawaiFoto),
     pekerjaanNama: r.pekerjaanNama,
     peran: r.peran,
     kegiatanId: r.kegiatanId,

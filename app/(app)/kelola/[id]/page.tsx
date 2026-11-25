@@ -7,6 +7,7 @@ import { detailKegiatan, pegawaiAktif, timBesarPegawai } from "@/lib/data";
 import { fmtPersen } from "@/lib/capaian";
 import { daftarBulan, fmtTanggal, labelBulan } from "@/lib/waktu";
 import { Button } from "@/components/ui/button";
+import { urlFoto } from "@/lib/foto";
 import { Avatar, EmptyState, PageHeader, SectionCard } from "@/components/sisar/ui";
 import { BobotBadge, StatusBadge } from "@/components/sisar/status";
 import { KegiatanDialog, PekerjaanDialog, SubDialog, TargetDialog, TugaskanDialog } from "../forms";
@@ -142,7 +143,7 @@ export default async function KelolaKegiatanPage({ params }: PageProps<"/kelola/
                                   <tr key={a.id}>
                                     <td className="px-3 py-2">
                                       <span className="flex items-center gap-2">
-                                        <Avatar nama={a.nama} className="size-7 text-[10px]" />
+                                        <Avatar nama={a.nama} foto={urlFoto(a.foto)} className="size-7 text-[10px]" />
                                         <span className="font-medium">{a.nama}</span>
                                       </span>
                                     </td>

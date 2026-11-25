@@ -7,6 +7,7 @@ import { jumlahBelumBerbobot, jumlahMenungguApproval } from "@/lib/data";
 import { jalankanJobJikaPerlu } from "@/lib/layanan/job";
 import { BellLink, MobileNav, Sidebar, type NavUser } from "@/components/sisar/nav";
 import { Avatar } from "@/components/sisar/ui";
+import { urlFoto } from "@/lib/foto";
 
 export default async function AppLayout({ children }: LayoutProps<"/">) {
   const user = await requireUser();
@@ -53,7 +54,7 @@ export default async function AppLayout({ children }: LayoutProps<"/">) {
           <div className="ml-auto flex items-center gap-2">
             <BellLink count={notif} />
             <div className="hidden items-center gap-2 sm:flex">
-              <Avatar nama={user.nama} />
+              <Avatar nama={user.nama} foto={urlFoto(user.foto)} />
               <div className="leading-tight">
                 <p className="max-w-40 truncate text-sm font-semibold">{user.nama}</p>
                 <p className="max-w-40 truncate text-xs text-muted-foreground">{user.jabatan ?? "Pegawai"}</p>

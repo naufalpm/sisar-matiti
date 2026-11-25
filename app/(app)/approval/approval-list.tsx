@@ -14,6 +14,7 @@ import type { StatusProgres } from "@/lib/capaian";
 export type ApprovalRow = {
   id: number;
   pegawaiNama: string;
+  pegawaiFoto: string | null;
   pekerjaanNama: string;
   peran: string;
   kegiatanId: number;
@@ -44,7 +45,7 @@ function Info({ r, mode }: { r: ApprovalRow; mode: "antrean" | "disetujui" | "se
   return (
     <div className="min-w-0 flex-1">
       <div className="flex items-center gap-2.5">
-        <Avatar nama={r.pegawaiNama} />
+        <Avatar nama={r.pegawaiNama} foto={r.pegawaiFoto} />
         <div className="min-w-0">
           <p className="truncate font-semibold">{r.pegawaiNama}</p>
           <p className="truncate text-xs text-muted-foreground">

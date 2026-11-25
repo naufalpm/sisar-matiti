@@ -10,6 +10,8 @@ export type CurrentUser = {
   nama: string;
   username: string;
   jabatan: string | null;
+  /** Nama file foto (pakai urlFoto untuk URL-nya). */
+  foto: string | null;
   isKepala: boolean;
   isAdmin: boolean;
   harusGantiPassword: boolean;
@@ -43,6 +45,7 @@ export const getUser = cache(async (): Promise<CurrentUser | null> => {
     nama: p.nama,
     username: p.username,
     jabatan: p.jabatan,
+    foto: p.foto,
     isKepala: p.isKepala,
     isAdmin: p.isAdmin,
     harusGantiPassword: p.harusGantiPassword,
