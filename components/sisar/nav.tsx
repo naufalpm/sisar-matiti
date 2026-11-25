@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import Image from "next/image";
+import { SisarMatitiMark } from "@/components/sisar/logo";
 import { usePathname } from "next/navigation";
 import { useState } from "react";
 import {
@@ -125,8 +125,8 @@ function NavLinks({ user, counts, onNavigate }: { user: NavUser; counts: NavCoun
 function Brand() {
   return (
     <Link href="/" className="flex items-center gap-3 rounded-xl px-2 focus-visible:ring-2 focus-visible:ring-sidebar-ring focus-visible:outline-none">
-      <span className="flex size-10 shrink-0 items-center justify-center rounded-xl bg-white p-1.5 shadow">
-        <Image src="/logo-bps.svg" alt="Logo BPS" width={32} height={32} />
+      <span className="flex size-10 shrink-0 items-center justify-center rounded-xl bg-white shadow">
+        <SisarMatitiMark size={30} />
       </span>
       <span className="min-w-0">
         <span className="block text-base leading-tight font-bold text-white">Sisar Matiti</span>
@@ -137,7 +137,7 @@ function Brand() {
 }
 
 function UserBox({ user }: { user: NavUser }) {
-  const peran = [user.isKepala && "Kepala", user.isAdmin && "Admin", user.isKetuaTim && "Ketua Tim", user.isPJ && "PJ Kegiatan"]
+  const peran = [user.isKepala && "Kepala", user.isAdmin && "Admin", user.isKetuaTim && "Ketua Tim"]
     .filter(Boolean)
     .join(" · ") || "Pegawai";
   return (
