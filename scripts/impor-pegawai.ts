@@ -5,7 +5,7 @@
  *   npm run impor:pegawai -- data/pegawai.csv --jalankan   → terapkan
  *
  * - Dicocokkan lewat NIP 18 digit; bila belum ada, lewat username.
- * - Pegawai baru dibuatkan akun: password awal = NIP 18 digit, wajib ganti saat login pertama.
+ * - Pegawai baru dibuatkan akun: password awal = username + "123" (mis. naufal123), wajib ganti saat login pertama.
  * - Pegawai lama: profil diperbarui; username, password, status aktif & peran admin tidak diubah.
  * - Peran Kepala hanya ditambahkan untuk Kepala BPS Kabupaten (tidak pernah dicabut oleh impor).
  */
@@ -13,7 +13,7 @@ import "../lib/load-env";
 import { readFileSync } from "node:fs";
 import { eq } from "drizzle-orm";
 import { db, schema } from "../db";
-import { hashPassword } from "../lib/auth/password";
+import { hashPassword, passwordAwal } from "../lib/auth/password";
 import { parsePegawaiCsv, type ProfilImpor } from "../lib/impor-pegawai";
 
 const args = process.argv.slice(2);
@@ -81,7 +81,7 @@ async function main() {
     return;
   }
 
-  const hashBaru = await Promise.all(baru.map((p) => hashPassword(p.nip)));
+  const hashBaru = await Promise.all(baru.map((p) => hashPassword(passwordAwal(p.username))));
   await db.transaction(async (tx) => {
     for (const [i, p] of baru.entries()) {
       await tx.insert(schema.pegawai).values({

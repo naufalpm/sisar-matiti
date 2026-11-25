@@ -15,6 +15,7 @@ export async function login(_prev: LoginState, fd: FormData): Promise<LoginState
   const username = String(fd.get("username") ?? "").trim().toLowerCase();
   const password = String(fd.get("password") ?? "");
   const next = String(fd.get("next") ?? "");
+  const ingat = fd.get("ingat") === "on";
   if (!username || !password) return { pesan: "Isi username dan password.", username };
 
   const p = percobaan.get(username);
@@ -30,7 +31,7 @@ export async function login(_prev: LoginState, fd: FormData): Promise<LoginState
     return { pesan: "Username atau password salah, atau akun dinonaktifkan.", username };
   }
   percobaan.delete(username);
-  await buatSesi(user.id);
+  await buatSesi(user.id, ingat);
   redirect(next.startsWith("/") && !next.startsWith("//") ? next : "/?masuk=1");
 }
 

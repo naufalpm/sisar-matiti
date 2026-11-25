@@ -11,3 +11,8 @@ export async function cekPassword(hashed: string, password: string) {
     return false;
   }
 }
+
+/** Password awal akun baru / hasil reset massal: username + "123", mis. naufal123. */
+export function passwordAwal(username: string) {
+  return `${username}123`;
+}

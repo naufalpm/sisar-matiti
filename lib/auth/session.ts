@@ -5,15 +5,16 @@ import { eq, lt } from "drizzle-orm";
 import { db, schema } from "@/db";
 
 export const SESSION_COOKIE = "sm_session";
-const DURASI_MS = 1000 * 60 * 60 * 24 * 14; // 14 hari
+const DURASI_INGAT_MS = 1000 * 60 * 60 * 24 * 30; // "Ingat saya": 30 hari
+const DURASI_SESI_MS = 1000 * 60 * 60 * 12; // tanpa "Ingat saya": 12 jam, cookie hilang saat browser ditutup
 
 function hashToken(token: string) {
   return createHash("sha256").update(token).digest("hex");
 }
 
-export async function buatSesi(pegawaiId: number) {
+export async function buatSesi(pegawaiId: number, ingat = true) {
   const token = randomBytes(32).toString("base64url");
-  const expiresAt = new Date(Date.now() + DURASI_MS);
+  const expiresAt = new Date(Date.now() + (ingat ? DURASI_INGAT_MS : DURASI_SESI_MS));
   await db.insert(schema.sesi).values({ id: hashToken(token), pegawaiId, expiresAt });
   // Bersihkan sesi kedaluwarsa secara oportunistik.
   await db.delete(schema.sesi).where(lt(schema.sesi.expiresAt, new Date()));
@@ -22,7 +23,8 @@ export async function buatSesi(pegawaiId: number) {
     sameSite: "lax",
     secure: process.env.NODE_ENV === "production" && process.env.COOKIE_INSECURE !== "1",
     path: "/",
-    expires: expiresAt,
+    // Tanpa "Ingat saya" cookie dibuat sebagai session cookie (tanpa expires).
+    ...(ingat ? { expires: expiresAt } : {}),
   });
 }
 
